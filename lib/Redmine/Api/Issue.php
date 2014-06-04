@@ -64,13 +64,7 @@ class Issue extends AbstractApi
 
         foreach ($params as $k => $v) {
             if ('custom_fields' === $k && is_array($v)) {
-                $custom_fields_item = $xml->addChild('custom_fields', '');
-                $custom_fields_item->addAttribute('type', 'array');
-                foreach ($v as $field) {
-                    $item = $custom_fields_item->addChild('custom_field', '');
-                    $item->addAttribute('id', (int) $field['id']);
-                    $item->addChild('value', $field['value']);
-                }
+                $this->attachCustomFieldXML($xml, $v);
             } elseif ('watcher_user_ids' === $k && is_array($v)) {
                 $watcher_user_ids = $xml->addChild('watcher_user_ids', '');
                 $watcher_user_ids->addAttribute('type', 'array');
@@ -245,7 +239,12 @@ class Issue extends AbstractApi
      */
     public function attach($id, array $attachment)
     {
-        $request['issue'] = array('id' => $id, 'uploads' => array('upload' => $attachment));
+        $request['issue'] = array(
+            'id' => $id,
+            'uploads' => array(
+                'upload' => $attachment
+            )
+        );
 
         return $this->put('/issues/'.$id.'.json', json_encode($request));
     }
